@@ -35,12 +35,16 @@ public class User {
     @Column(nullable = false, length = 50)
     private String email;
 
+    @Column(nullable = false, unique = true)
+    private String image_file_path;
+
     @Builder
     public User(String username, String password, String name, String studentNo, String email) {
         this.username = username;
         this.password = password;
         this.name = name;
         this.email = email;
+        image_file_path = "image/" + username;
     }
 
     /**
