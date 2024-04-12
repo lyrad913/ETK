@@ -36,7 +36,7 @@ public class User {
     private String email;
 
     @Column(nullable = false, unique = true)
-    private String image_file_path;
+    private String image_folder_path;
 
     @Builder
     public User(String username, String password, String name, String studentNo, String email) {
@@ -44,7 +44,7 @@ public class User {
         this.password = password;
         this.name = name;
         this.email = email;
-        image_file_path = "image/" + username;
+        image_folder_path = "image/" + username;  // 추후에 경로 수정 필요
     }
 
     /**
