@@ -13,13 +13,17 @@ class CameraPreviewWidget extends StatelessWidget {
     return Align(
       alignment: Alignment.topRight,
       child: Padding(
-        padding: const EdgeInsets.only(top: 40.0, right: 20.0),
+        padding: const EdgeInsets.all(10),
         child: FutureBuilder<void>(
           future: future,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
-              return ClipOval(
-                child: CameraPreview(controller),
+              return SizedBox(
+                width: 100,
+                height: 100,
+                child: ClipOval(
+                  child: CameraPreview(controller),
+                ),
               );
             } else {
               return const CircularProgressIndicator();

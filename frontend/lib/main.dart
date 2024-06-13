@@ -24,9 +24,17 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Custom UI'),
+          title: const Text(
+            '시선 추적 키보드',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ),
-        body: CustomUI(camera: camera),
+        body: CustomUI(
+          camera: camera,
+        ),
       ),
     );
   }
@@ -64,19 +72,34 @@ class _CustomUIState extends State<CustomUI> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        const Center(child: BackgroundLines()),
-        const CenterContent(),
-        CameraPreviewWidget(
-            controller: _controller, future: _initializeControllerFuture),
-        CenterButton(onPressed: () => print('다음 버튼 클릭됨')),
-        BottomTextField(
-          textController: _textController,
-          onClear: () => _textController.clear(),
-          onSubmit: () => print(_textController.text),
-        ),
-      ],
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Column(
+        children: [
+          Expanded(
+            child: Stack(
+              children: [
+                const Center(child: BackgroundLines()),
+                const CenterContent(),
+                Align(
+                  alignment: Alignment.topRight,
+                  child: CameraPreviewWidget(
+                      controller: _controller,
+                      future: _initializeControllerFuture),
+                ),
+                CenterButton(
+                  onPressed: () => print('다음 버튼 클릭됨'),
+                ),
+              ],
+            ),
+          ),
+          BottomTextField(
+            textController: _textController,
+            onClear: () => _textController.clear(),
+            onSubmit: () => print(_textController.text),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -15,7 +15,7 @@ class CenterButton extends StatelessWidget {
           height: 100,
           alignment: Alignment.center,
           child: const Text('다음',
-              style: TextStyle(fontSize: 40, color: Colors.grey)),
+              style: TextStyle(fontSize: 40, color: Colors.black)),
         ),
       ),
     );
