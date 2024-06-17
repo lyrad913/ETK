@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 
 class BottomTextField extends StatelessWidget {
   final TextEditingController textController;
-  final VoidCallback onClear;
   final VoidCallback onSubmit;
 
   const BottomTextField({
     super.key,
     required this.textController,
-    required this.onClear,
     required this.onSubmit,
   });
 
@@ -27,13 +25,19 @@ class BottomTextField extends StatelessWidget {
                 // 커뮤니티 이동 버튼 클릭 시 수행할 작업
               },
             ),
-            hintText: '시선 추적',
+            hintText: '입력하신 글자가 출력됩니다.',
             suffixIcon: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
                   icon: const Icon(Icons.undo),
-                  onPressed: onClear,
+                  onPressed: () => {
+                    print(
+                      "'${textController.text.substring(textController.text.length - 1, textController.text.length)}' 제거",
+                    ),
+                    textController.text = textController.text
+                        .substring(0, textController.text.length - 1),
+                  },
                 ),
                 IconButton(
                   icon: const Icon(Icons.send),

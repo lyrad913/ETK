@@ -18,9 +18,13 @@ class CameraPreviewWidget extends StatelessWidget {
           future: future,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
-              return SizedBox(
+              return Container(
                 width: 100,
                 height: 100,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: const Color.fromARGB(255, 0, 0, 0)),
+                ),
                 child: ClipOval(
                   child: CameraPreview(controller),
                 ),
