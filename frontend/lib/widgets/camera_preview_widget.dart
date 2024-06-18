@@ -5,36 +5,30 @@ class CameraPreviewWidget extends StatelessWidget {
   final CameraController controller;
   final Future<void> future;
 
-  const CameraPreviewWidget(
-      {super.key, required this.controller, required this.future});
+  const CameraPreviewWidget({
+    super.key,
+    required this.controller,
+    required this.future,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.topRight,
-      child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: FutureBuilder<void>(
-          future: future,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              return Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: const Color.fromARGB(255, 0, 0, 0)),
-                ),
-                child: ClipOval(
-                  child: CameraPreview(controller),
-                ),
-              );
-            } else {
-              return const CircularProgressIndicator();
-            }
-          },
-        ),
-      ),
+    return FutureBuilder<void>(
+      future: future,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          return ClipRRect(
+            borderRadius: BorderRadius.circular(8.0),
+            child: SizedBox(
+              width: 100,
+              height: 150,
+              child: CameraPreview(controller),
+            ),
+          );
+        } else {
+          return const Center(child: CircularProgressIndicator());
+        }
+      },
     );
   }
 }

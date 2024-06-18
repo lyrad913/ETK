@@ -1,8 +1,9 @@
+import 'dart:io';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 
-import 'pages/new_page.dart';
-import 'widgets/background_lines.dart';
 import 'widgets/bottom_text_field.dart';
 import 'widgets/camera_preview_widget.dart';
 import 'widgets/center_button.dart';
@@ -23,6 +24,20 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+        primarySwatch: Colors.deepPurple,
+        textTheme: const TextTheme(
+          displayLarge: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.w600,
+            color: Colors.deepPurpleAccent,
+          ),
+          bodyLarge: TextStyle(
+            fontSize: 20,
+            color: Colors.black87,
+          ),
+        ),
+      ),
       home: CustomUI(camera: camera),
     );
   }
@@ -41,6 +56,10 @@ class _CustomUIState extends State<CustomUI> {
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
   final TextEditingController _textController = TextEditingController();
+  List<String> _currentLabels = ['띄어\n쓰기', '입력\n완료', '자음', '모음'];
+  bool _isConsonantPage = false;
+  bool _isVowelPage = false;
+  int _currentPageIndex = 0;
 
   // 문자 세트 정의
   final List<List<String>> consonantPages = [
@@ -48,6 +67,13 @@ class _CustomUIState extends State<CustomUI> {
     ['ㅅ', 'ㄷ', 'ㅈ', 'ㅁ'],
     ['ㅎ', 'ㅂ', 'ㅊ', 'ㅌ'],
     ['ㅍ', 'ㅋ']
+  ];
+
+  final List<List<String>> vowelPages = [
+    ['ㅏ', 'ㅣ', 'ㅡ', 'ㅓ'],
+    ['ㅗ', 'ㅜ', 'ㅕ', 'ㅐ'],
+    ['ㅔ', 'ㅢ', 'ㅘ', 'ㅙ'],
+    ['ㅛ', 'ㅑ', 'ㅠ']
   ];
 
   @override
@@ -66,16 +92,65 @@ class _CustomUIState extends State<CustomUI> {
     super.dispose();
   }
 
+  void _updateLabels(int index) {
+    setState(() {
+      if (_isConsonantPage) {
+        _currentLabels = consonantPages[index];
+      } else if (_isVowelPage) {
+        _currentLabels = vowelPages[index];
+      }
+      _currentPageIndex = index;
+    });
+  }
+
+  void _goToMainPage() {
+    setState(() {
+      _isConsonantPage = false;
+      _isVowelPage = false;
+      _currentLabels = ['띄어\n쓰기', '입력\n완료', '자음', '모음'];
+    });
+  }
+
+  void _togglePage(String label) {
+    if (label == '자음') {
+      setState(() {
+        _isConsonantPage = true;
+        _isVowelPage = false;
+        _currentLabels = consonantPages[0];
+        _currentPageIndex = 0;
+      });
+    } else if (label == '모음') {
+      setState(() {
+        _isConsonantPage = false;
+        _isVowelPage = true;
+        _currentLabels = vowelPages[0];
+        _currentPageIndex = 0;
+      });
+    } else if (label == '띄어\n쓰기') {
+      setState(() {
+        _textController.text += ' ';
+      });
+    } else if (label == '입력\n완료') {
+      _saveToFile(_textController.text);
+      setState(() {
+        _textController.clear();
+      });
+    }
+  }
+
+  void _saveToFile(String text) async {
+    final directory = await getApplicationDocumentsDirectory();
+    final file = File('${directory.path}/text_input.txt');
+    await file.writeAsString(text);
+    print('File saved at ${file.path}');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
           '시선 추적 키보드',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.w600,
-          ),
         ),
       ),
       body: Padding(
@@ -85,31 +160,18 @@ class _CustomUIState extends State<CustomUI> {
             Expanded(
               child: Stack(
                 children: [
-                  const Center(child: BackgroundLines()),
+                  // const Center(child: BackgroundLines()),
                   CenterContent(
-                    labels: consonantPages[0],
+                    labels: _currentLabels,
                     onLabelPressed: (label) {
-                      setState(() {
-                        _textController.text += label;
-                      });
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => NewPage(
-                            camera: widget.camera,
-                            labels: const ['ㅏ', 'ㅣ', 'ㅡ', 'ㅓ'],
-                            isConsonantPage: false,
-                            pageIndex: 0,
-                            pages: const [
-                              ['ㅏ', 'ㅣ', 'ㅡ', 'ㅓ'],
-                              ['ㅗ', 'ㅜ', 'ㅕ', 'ㅐ'],
-                              ['ㅔ', 'ㅢ', 'ㅘ', 'ㅙ'],
-                              ['ㅛ', 'ㅑ', 'ㅠ']
-                            ],
-                            textController: _textController,
-                          ),
-                        ),
-                      );
+                      if (_isConsonantPage || _isVowelPage) {
+                        setState(() {
+                          _textController.text += label;
+                        });
+                        _goToMainPage();
+                      } else {
+                        _togglePage(label);
+                      }
                     },
                   ),
                   Align(
@@ -119,24 +181,16 @@ class _CustomUIState extends State<CustomUI> {
                       future: _initializeControllerFuture,
                     ),
                   ),
-                  CenterButton(
-                    onPressed: () {
-                      int nextPageIndex = 1 % consonantPages.length;
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => NewPage(
-                            camera: widget.camera,
-                            labels: consonantPages[nextPageIndex],
-                            isConsonantPage: true,
-                            pageIndex: nextPageIndex,
-                            pages: consonantPages,
-                            textController: _textController,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+                  if (_isConsonantPage || _isVowelPage)
+                    CenterButton(
+                      onPressed: () {
+                        int nextPageIndex = (_currentPageIndex + 1) %
+                            (_isConsonantPage
+                                ? consonantPages.length
+                                : vowelPages.length);
+                        _updateLabels(nextPageIndex);
+                      },
+                    ),
                 ],
               ),
             ),

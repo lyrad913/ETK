@@ -31,6 +31,7 @@ class BottomTextField extends StatelessWidget {
               children: [
                 IconButton(
                   icon: const Icon(Icons.undo),
+                  color: Colors.deepPurpleAccent,
                   onPressed: () => {
                     print(
                       "'${textController.text.substring(textController.text.length - 1, textController.text.length)}' 제거",
@@ -42,6 +43,7 @@ class BottomTextField extends StatelessWidget {
                 IconButton(
                   icon: const Icon(Icons.send),
                   onPressed: onSubmit,
+                  color: Colors.deepPurpleAccent,
                 ),
               ],
             ),

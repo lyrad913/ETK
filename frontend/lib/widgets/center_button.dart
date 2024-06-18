@@ -11,11 +11,27 @@ class CenterButton extends StatelessWidget {
       child: GestureDetector(
         onTap: onPressed,
         child: Container(
-          width: 100,
-          height: 100,
+          width: 130,
+          height: 130,
+          padding: const EdgeInsets.all(16.0),
+          decoration: BoxDecoration(
+            color: Colors.deepPurpleAccent,
+            borderRadius: BorderRadius.circular(8.0),
+            boxShadow: const [
+              BoxShadow(
+                color: Colors.black26,
+                offset: Offset(2, 2),
+                blurRadius: 4,
+              ),
+            ],
+          ),
           alignment: Alignment.center,
           child: const Text('다음',
-              style: TextStyle(fontSize: 40, color: Colors.black)),
+              style: TextStyle(
+                fontSize: 30,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              )),
         ),
       ),
     );

@@ -22,7 +22,32 @@ class PositionedButton extends StatelessWidget {
         padding: padding,
         child: GestureDetector(
           onTap: onPressed,
-          child: Text(label, style: const TextStyle(fontSize: 50)),
+          child: Container(
+            width: 130,
+            height: 130,
+            padding: const EdgeInsets.all(16.0),
+            decoration: BoxDecoration(
+              color: Colors.deepPurpleAccent,
+              borderRadius: BorderRadius.circular(8.0),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.black26,
+                  offset: Offset(2, 2),
+                  blurRadius: 4,
+                ),
+              ],
+            ),
+            child: Center(
+              child: Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 30,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
         ),
       ),
     );
