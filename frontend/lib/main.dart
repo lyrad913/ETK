@@ -61,6 +61,8 @@ class _CustomUIState extends State<CustomUI> {
   bool _isVowelPage = false;
   int _currentPageIndex = 0;
 
+  final List<String> stateLabel = ['띄어\n쓰기', '입력\n완료', '자음', '모음'];
+
   // 문자 세트 정의
   final List<List<String>> consonantPages = [
     ['ㅇ', 'ㄴ', 'ㄱ', 'ㄹ'],
@@ -107,7 +109,7 @@ class _CustomUIState extends State<CustomUI> {
     setState(() {
       _isConsonantPage = false;
       _isVowelPage = false;
-      _currentLabels = ['띄어\n쓰기', '입력\n완료', '자음', '모음'];
+      _currentLabels = stateLabel;
     });
   }
 

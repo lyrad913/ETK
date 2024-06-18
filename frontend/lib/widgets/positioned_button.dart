@@ -23,8 +23,8 @@ class PositionedButton extends StatelessWidget {
         child: GestureDetector(
           onTap: onPressed,
           child: Container(
-            width: 130,
-            height: 130,
+            width: MediaQuery.of(context).size.width * 0.25,
+            height: MediaQuery.of(context).size.width * 0.25,
             padding: const EdgeInsets.all(16.0),
             decoration: BoxDecoration(
               color: Colors.deepPurpleAccent,
@@ -38,12 +38,15 @@ class PositionedButton extends StatelessWidget {
               ],
             ),
             child: Center(
-              child: Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 30,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
+              child: FittedBox(
+                fit: BoxFit.contain,
+                child: Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: 30,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
