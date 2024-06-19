@@ -12,8 +12,21 @@ import 'widgets/center_content.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final cameras = await availableCameras();
-  final firstCamera = cameras.first;
-  runApp(MyApp(camera: firstCamera));
+  CameraDescription? frontCamera;
+  
+  // 전면 카메라를 찾기
+  for (var camera in cameras) {
+    if (camera.lensDirection == CameraLensDirection.front) {
+      frontCamera = camera;
+      break;
+    }
+  }
+
+  if (frontCamera == null) {
+    throw Exception('전면 카메라를 찾을 수 없습니다.');
+  }
+
+  runApp(MyApp(camera: frontCamera));
 }
 
 class MyApp extends StatelessWidget {
