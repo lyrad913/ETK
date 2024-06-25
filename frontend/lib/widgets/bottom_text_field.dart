@@ -1,43 +1,86 @@
 import 'package:flutter/material.dart';
 
+import '../utils/korean.dart';
+
 class BottomTextField extends StatelessWidget {
   final TextEditingController textController;
+  final String displayText;
   final VoidCallback onSubmit;
+  final Korean korean;
+  final logger;
 
   const BottomTextField({
     super.key,
     required this.textController,
+    required this.displayText,
     required this.onSubmit,
+    required this.korean,
+    required this.logger,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.bottomCenter,
+    String textToDisplay =
+        displayText.isNotEmpty ? displayText : '입력하신 글자가 출력됩니다.';
+
+    String displayedText = textToDisplay.length >= 15
+        ? '...${textToDisplay.substring(textToDisplay.length - 12)}'
+        : textToDisplay;
+
+    print(displayedText);
+    print(textToDisplay.length);
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 1,
+            blurRadius: 5,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: TextField(
-          controller: textController,
-          decoration: InputDecoration(
-            prefixIcon: IconButton(
+        child: Row(
+          children: [
+            IconButton(
               icon: const Icon(Icons.group),
               onPressed: () {
-                // 커뮤니티 이동 버튼 클릭 시 수행할 작업
+                logger.i("커뮤니티 사용");
               },
             ),
-            hintText: '입력하신 글자가 출력됩니다.',
-            suffixIcon: Row(
+            Expanded(
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.deepPurpleAccent,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  displayedText,
+                  style: const TextStyle(color: Colors.white),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
+            Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
                   icon: const Icon(Icons.undo),
                   color: Colors.deepPurpleAccent,
-                  onPressed: () => {
-                    print(
-                      "'${textController.text.substring(textController.text.length - 1, textController.text.length)}' 제거",
-                    ),
-                    textController.text = textController.text
-                        .substring(0, textController.text.length - 1),
+                  onPressed: () {
+                    if (textController.text.isNotEmpty) {
+                      logger.i(
+                        "'${textController.text.substring(textController.text.length - 1)}' 제거",
+                      );
+                      textController.text = textController.text
+                          .substring(0, textController.text.length - 1);
+                    }
                   },
                 ),
                 IconButton(
@@ -47,10 +90,7 @@ class BottomTextField extends StatelessWidget {
                 ),
               ],
             ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-          ),
+          ],
         ),
       ),
     );

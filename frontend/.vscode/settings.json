@@ -1,5 +1,5 @@
 {
     "java.compile.nullAnalysis.mode": "automatic",
     "java.configuration.updateBuildConfiguration": "interactive",
-    "cmake.sourceDirectory": "/Users/min/Documents/study/ETK/frontend/linux"
+    "cmake.sourceDirectory": "E:/GitHub/ETK/frontend/flutter/dev/a11y_assessments/linux"
 }

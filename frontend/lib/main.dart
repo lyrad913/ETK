@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 
+import 'utils/korean.dart';
 import 'widgets/bottom_text_field.dart';
 import 'widgets/camera_preview_widget.dart';
 import 'widgets/center_button.dart';
@@ -13,7 +15,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final cameras = await availableCameras();
   CameraDescription? frontCamera;
-  
+
   // 전면 카메라를 찾기
   for (var camera in cameras) {
     if (camera.lensDirection == CameraLensDirection.front) {
@@ -69,10 +71,13 @@ class _CustomUIState extends State<CustomUI> {
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
   final TextEditingController _textController = TextEditingController();
+  final logger = Logger();
   List<String> _currentLabels = ['띄어\n쓰기', '입력\n완료', '자음', '모음'];
   bool _isConsonantPage = false;
   bool _isVowelPage = false;
   int _currentPageIndex = 0;
+  var korean = Korean();
+  String _displayText = '';
 
   final List<String> stateLabel = ['띄어\n쓰기', '입력\n완료', '자음', '모음'];
 
@@ -99,12 +104,21 @@ class _CustomUIState extends State<CustomUI> {
       ResolutionPreset.medium,
     );
     _initializeControllerFuture = _controller.initialize();
+    _textController.addListener(_updateDisplayText);
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _textController.removeListener(_updateDisplayText);
+    _textController.dispose();
     super.dispose();
+  }
+
+  void _updateDisplayText() {
+    setState(() {
+      _displayText = korean.moasseugi(_textController.text);
+    });
   }
 
   void _updateLabels(int index) {
@@ -154,10 +168,21 @@ class _CustomUIState extends State<CustomUI> {
   }
 
   void _saveToFile(String text) async {
+    text = korean.moasseugi(text);
+
+    var now = DateTime.now();
+    var year = now.year;
+    var month = now.month;
+    var day = now.day;
+    var hour = now.hour;
+    var minute = now.minute;
+    var millisecond = now.millisecond;
+    var time = "$year-$month-$day-$hour-$minute-$millisecond";
+
     final directory = await getApplicationDocumentsDirectory();
-    final file = File('${directory.path}/text_input.txt');
+    final file = File('${directory.path}/text_input_$time.txt');
     await file.writeAsString(text);
-    print('File saved at ${file.path}');
+    logger.i('Content: $text File saved at ${file.path}');
   }
 
   @override
@@ -175,13 +200,12 @@ class _CustomUIState extends State<CustomUI> {
             Expanded(
               child: Stack(
                 children: [
-                  // const Center(child: BackgroundLines()),
                   CenterContent(
                     labels: _currentLabels,
                     onLabelPressed: (label) {
                       if (_isConsonantPage || _isVowelPage) {
                         setState(() {
-                          _textController.text += label;
+                          _textController.text = _textController.text + label;
                         });
                         _goToMainPage();
                       } else {
@@ -211,7 +235,10 @@ class _CustomUIState extends State<CustomUI> {
             ),
             BottomTextField(
               textController: _textController,
-              onSubmit: () => print(_textController.text),
+              displayText: _displayText,
+              korean: korean,
+              onSubmit: () => logger.i(korean.moasseugi(_textController.text)),
+              logger: logger,
             ),
           ],
         ),
