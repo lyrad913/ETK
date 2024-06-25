@@ -20,8 +20,7 @@ class BottomTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String textToDisplay =
-        displayText.isNotEmpty ? displayText : '입력하신 글자가 출력됩니다.';
+    String textToDisplay = displayText.isNotEmpty ? displayText : '글자가 출력됩니다.';
 
     String displayedText = textToDisplay.length >= 15
         ? '...${textToDisplay.substring(textToDisplay.length - 12)}'
