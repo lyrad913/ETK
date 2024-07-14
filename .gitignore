@@ -13,3 +13,5 @@ frontend/pubspec.yaml
 frontend/windows/flutter/generated_plugin_registrant.cc
 frontend/windows/flutter/generated_plugin_registrant.h
 frontend/windows/flutter/generated_plugins.cmake
+BackEnd/gradle
+BackEnd/src/main/resources
