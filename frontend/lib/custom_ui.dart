@@ -5,6 +5,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:hangul/hangul.dart';
 
 import 'utils/korean.dart';
 import 'widgets/bottom_text_field.dart';
@@ -25,6 +26,7 @@ class CustomUI extends StatefulWidget {
 class CustomUIState extends State<CustomUI> {
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
+  final hangulInput = HangulInput('');
   final TextEditingController _textController = TextEditingController();
   final logger = Logger();
   bool _isConsonantPage = false;
@@ -103,7 +105,8 @@ class CustomUIState extends State<CustomUI> {
   }
 
   void inputText(String text){
-    _textController.text += text;
+    hangulInput.pushCharacter(text);
+    _textController.text = hangulInput.text;
   }
 
   void incrementIdx(){
