@@ -1,21 +1,21 @@
-package Hongik.EyeTracking.domain;
+package Hongik.EyeTracking.comment.domain;
 
+import Hongik.EyeTracking.common.inheritance.BaseEntity;
+import Hongik.EyeTracking.post.domain.Post;
+import Hongik.EyeTracking.user.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
 @Getter
-@NoArgsConstructor(access = PROTECTED)
 @Entity
+@NoArgsConstructor(access = PROTECTED)
+@AllArgsConstructor(access = PROTECTED)
 @ToString(exclude = {"commenter", "post", "parentComment"})
-public class Comment extends BaseTimeEntity {
+public class Comment extends BaseEntity {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     @Column(name = "comment_id")
@@ -36,6 +36,7 @@ public class Comment extends BaseTimeEntity {
     @JoinColumn(name = "parent_comment_id")
     private Comment parentComment;
 
+    @Builder
     public Comment(String content, User commenter, Post post, Comment parentComment) {
         this.content = content;
         this.commenter = commenter;

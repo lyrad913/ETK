@@ -1,19 +1,20 @@
-package Hongik.EyeTracking.domain;
+package Hongik.EyeTracking.post.domain;
 
+import Hongik.EyeTracking.board.domain.Board;
+import Hongik.EyeTracking.common.inheritance.BaseEntity;
+import Hongik.EyeTracking.user.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PROTECTED;
 
-@NoArgsConstructor
 @Getter
 @Entity
-public class Post extends BaseTimeEntity {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = PROTECTED)
+public class Post extends BaseEntity {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     @Column(name = "post_id")
