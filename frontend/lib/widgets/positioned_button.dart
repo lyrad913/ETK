@@ -4,6 +4,7 @@ class PositionedButton extends StatelessWidget {
   final Alignment alignment;
   final EdgeInsets padding;
   final String label;
+  final int index;
   final VoidCallback onPressed;
 
   const PositionedButton({
@@ -11,6 +12,7 @@ class PositionedButton extends StatelessWidget {
     required this.alignment,
     required this.padding,
     required this.label,
+    required this.index,
     required this.onPressed,
   });
 

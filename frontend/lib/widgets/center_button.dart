@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 class CenterButton extends StatelessWidget {
   final VoidCallback onPressed;
 
-  const CenterButton({super.key, required this.onPressed});
+  const CenterButton({
+    super.key, 
+    required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
