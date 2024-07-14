@@ -4,6 +4,7 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
+!**/src/main/resources
 
 ### STS ###
 .apt_generated
@@ -26,6 +27,9 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
+# yml 파일 추가
+**/application.yml
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
@@ -35,3 +39,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+gradle
+resources

@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ImageController {
     private final ImageService imageService;
 
-    @PostMapping("/users/{username}/images")
+    @PostMapping("/upload")
     public void uploadImage(@PathVariable String username, @RequestParam("file") MultipartFile file) {
         try{
             imageService.createImage(username, file);
