@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
@@ -26,14 +27,16 @@ class CustomUIState extends State<CustomUI> {
   late Future<void> _initializeControllerFuture;
   final TextEditingController _textController = TextEditingController();
   final logger = Logger();
-  List<String> _currentLabels = ['띄어\n쓰기', '입력\n완료', '자음', '모음'];
   bool _isConsonantPage = false;
   bool _isVowelPage = false;
+  KeyboardState _state = S0State();
   int _currentPageIndex = 0;
   var korean = Korean();
   String _displayText = '';
 
   final List<String> stateLabel = ['띄어\n쓰기', '입력\n완료', '자음', '모음'];
+
+  final List<String> selectionPage = ['자음', '모음'];
 
   // 문자 세트 정의
   final List<List<String>> consonantPages = [
@@ -46,9 +49,11 @@ class CustomUIState extends State<CustomUI> {
   final List<List<String>> vowelPages = [
     ['ㅏ', 'ㅣ', 'ㅡ', 'ㅓ'],
     ['ㅗ', 'ㅜ', 'ㅕ', 'ㅐ'],
-    ['ㅔ', 'ㅢ', 'ㅘ', 'ㅙ'],
-    ['ㅛ', 'ㅑ', 'ㅠ']
+    ['ㅔ', 'ㅛ', 'ㅑ', 'ㅠ'],
+    // ['ㅢ', 'ㅘ', 'ㅙ'] //2중 모음 모든 케이스 못다룸.
   ];
+  
+  late List<String> _currentLabels;
 
   @override
   void initState() {
@@ -57,6 +62,7 @@ class CustomUIState extends State<CustomUI> {
       widget.camera,
       ResolutionPreset.medium,
     );
+    _currentLabels = consonantPages[0];
     _initializeControllerFuture = _controller.initialize();
     _textController.addListener(_updateDisplayText);
   }
@@ -64,6 +70,7 @@ class CustomUIState extends State<CustomUI> {
   @override
   void dispose() {
     _controller.dispose();
+    debugPrint(_textController.text);
     _textController.removeListener(_updateDisplayText);
     _textController.dispose();
     super.dispose();
@@ -75,15 +82,66 @@ class CustomUIState extends State<CustomUI> {
     });
   }
 
-  void _updateLabels(int index) {
-    setState(() {
-      if (_isConsonantPage) {
-        _currentLabels = consonantPages[index];
-      } else if (_isVowelPage) {
-        _currentLabels = vowelPages[index];
-      }
-      _currentPageIndex = index;
+  void changeState(KeyboardState state){
+    setState((){
+      resetIdx();
+      _state = state;
+      updateLabels(_currentPageIndex, _state.board);
     });
+  }
+
+  int getIdx(){
+    return _currentPageIndex;
+  }
+
+  int getConsonantPageLen(){
+    return consonantPages.length;
+  }
+
+  int getVowelPageLen(){
+    return vowelPages.length;
+  }
+
+  void inputText(String text){
+    _textController.text += text;
+  }
+
+  void incrementIdx(){
+    setState(() {
+      _currentPageIndex = ++_currentPageIndex 
+                                % (_isConsonantPage ? consonantPages.length 
+                                                    : vowelPages.length);
+    });
+  }
+
+  void resetIdx(){
+    setState(() {
+      _currentPageIndex = 0;
+    });
+  }
+
+  void updateLabels(int index, String board) {
+    /*
+    board : ["consonant", "vowel", "select"]
+    */
+    setState((){
+      switch(board){
+        case "consonant":
+          _currentLabels = consonantPages[index];
+          _isConsonantPage = true;
+          _isVowelPage = false;
+          break;
+        case "vowel":
+          _currentLabels = vowelPages[index];
+          _isConsonantPage = false;
+          _isVowelPage = true;
+          break;
+        case "select":
+          _currentLabels = selectionPage;
+          _isConsonantPage = false;
+          _isVowelPage = false;
+          break;
+      }});
   }
 
   void _goToMainPage() {
@@ -156,15 +214,8 @@ class CustomUIState extends State<CustomUI> {
                 children: [
                   CenterContent(
                     labels: _currentLabels,
-                    onLabelPressed: (label) {
-                      if (_isConsonantPage || _isVowelPage) {
-                        setState(() {
-                          _textController.text = _textController.text + label;
-                        });
-                        _goToMainPage();
-                      } else {
-                        _togglePage(label);
-                      }
+                    onButtonPressed: (index) {
+                      _state.handleInput(this, index);
                     },
                   ),
                   Align(
@@ -174,16 +225,16 @@ class CustomUIState extends State<CustomUI> {
                       future: _initializeControllerFuture,
                     ),
                   ),
-                  if (_isConsonantPage || _isVowelPage)
-                    CenterButton(
-                      onPressed: () {
-                        int nextPageIndex = (_currentPageIndex + 1) %
-                            (_isConsonantPage
-                                ? consonantPages.length
-                                : vowelPages.length);
-                        _updateLabels(nextPageIndex);
-                      },
-                    ),
+                  // if (_isConsonantPage || _isVowelPage)
+                  //   CenterButton(
+                  //     onPressed: () {
+                  //       int nextPageIndex = (_currentPageIndex + 1) %
+                  //           (_isConsonantPage
+                  //               ? consonantPages.length
+                  //               : vowelPages.length);
+                  //       _updateLabels(nextPageIndex);
+                  //     },
+                  //   ),
                 ],
               ),
             ),
