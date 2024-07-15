@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 
-import 'utils/korean.dart';
+import 'utils/hangul/hangul.dart';
 import 'widgets/bottom_text_field.dart';
 import 'widgets/camera_preview_widget.dart';
 import 'widgets/center_button.dart';

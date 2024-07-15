@@ -5,8 +5,8 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:hangul/hangul.dart';
 
+import 'utils/hangul/hangul.dart';
 import 'utils/korean.dart';
 import 'widgets/bottom_text_field.dart';
 import 'widgets/camera_preview_widget.dart';
@@ -26,7 +26,7 @@ class CustomUI extends StatefulWidget {
 class CustomUIState extends State<CustomUI> {
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
-  final hangulInput = HangulInput('');
+  final _hangulInput = HangulInput('');
   final TextEditingController _textController = TextEditingController();
   final logger = Logger();
   bool _isConsonantPage = false;
@@ -80,7 +80,7 @@ class CustomUIState extends State<CustomUI> {
 
   void _updateDisplayText() {
     setState(() {
-      _displayText = korean.moasseugi(_textController.text);
+      _displayText = _textController.text;
     });
   }
 
@@ -105,8 +105,8 @@ class CustomUIState extends State<CustomUI> {
   }
 
   void inputText(String text){
-    hangulInput.pushCharacter(text);
-    _textController.text = hangulInput.text;
+    _hangulInput.pushCharacter(text);
+    _textController.text = _hangulInput.text;
   }
 
   void incrementIdx(){
@@ -183,7 +183,7 @@ class CustomUIState extends State<CustomUI> {
   }
 
   void _saveToFile(String text) async {
-    text = korean.moasseugi(text);
+    text = _textController.text;
 
     var now = DateTime.now();
     var year = now.year;
@@ -243,9 +243,10 @@ class CustomUIState extends State<CustomUI> {
             ),
             BottomTextField(
               textController: _textController,
+              hangulInput: _hangulInput,
               displayText: _displayText,
               korean: korean,
-              onSubmit: () => logger.i(korean.moasseugi(_textController.text)),
+              onSubmit: () => logger.i(_textController.text),
               logger: logger,
             ),
           ],
