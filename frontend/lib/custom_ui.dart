@@ -7,10 +7,8 @@ import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'utils/hangul/hangul.dart';
-import 'utils/korean.dart';
 import 'widgets/bottom_text_field.dart';
 import 'widgets/camera_preview_widget.dart';
-import 'widgets/center_button.dart';
 import 'widgets/center_content.dart';
 import 'keyboard_states.dart';
 
@@ -31,9 +29,8 @@ class CustomUIState extends State<CustomUI> {
   final logger = Logger();
   bool _isConsonantPage = false;
   bool _isVowelPage = false;
-  KeyboardState _state = S0State();
+  KeyboardState _state = S0State('');
   int _currentPageIndex = 0;
-  var korean = Korean();
   String _displayText = '';
 
   final List<String> stateLabel = ['띄어\n쓰기', '입력\n완료', '자음', '모음'];
@@ -81,6 +78,12 @@ class CustomUIState extends State<CustomUI> {
   void _updateDisplayText() {
     setState(() {
       _displayText = _textController.text;
+    });
+  }
+
+  void undo(){
+    setState(() {
+      _state.undo(this);
     });
   }
 
@@ -147,41 +150,6 @@ class CustomUIState extends State<CustomUI> {
       }});
   }
 
-  void _goToMainPage() {
-    setState(() {
-      _isConsonantPage = false;
-      _isVowelPage = false;
-      _currentLabels = stateLabel;
-    });
-  }
-
-  void _togglePage(String label) {
-    if (label == '자음') {
-      setState(() {
-        _isConsonantPage = true;
-        _isVowelPage = false;
-        _currentLabels = consonantPages[0];
-        _currentPageIndex = 0;
-      });
-    } else if (label == '모음') {
-      setState(() {
-        _isConsonantPage = false;
-        _isVowelPage = true;
-        _currentLabels = vowelPages[0];
-        _currentPageIndex = 0;
-      });
-    } else if (label == '띄어\n쓰기') {
-      setState(() {
-        _textController.text += ' ';
-      });
-    } else if (label == '입력\n완료') {
-      _saveToFile(_textController.text);
-      setState(() {
-        _textController.clear();
-      });
-    }
-  }
-
   void _saveToFile(String text) async {
     text = _textController.text;
 
@@ -245,8 +213,8 @@ class CustomUIState extends State<CustomUI> {
               textController: _textController,
               hangulInput: _hangulInput,
               displayText: _displayText,
-              korean: korean,
               onSubmit: () => logger.i(_textController.text),
+              undo: undo,
               logger: logger,
             ),
           ],

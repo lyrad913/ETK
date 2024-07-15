@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
 import '../utils/hangul/hangul.dart';
-import '../utils/korean.dart';
+import '../keyboard_states.dart';
 
 class BottomTextField extends StatelessWidget {
   final TextEditingController textController;
   final HangulInput hangulInput;
   final String displayText;
   final VoidCallback onSubmit;
-  final Korean korean;
+  final void Function() undo;
   final logger;
 
   const BottomTextField({
@@ -17,7 +17,7 @@ class BottomTextField extends StatelessWidget {
     required this.hangulInput,
     required this.displayText,
     required this.onSubmit,
-    required this.korean,
+    required this.undo,
     required this.logger,
   });
 
@@ -77,6 +77,7 @@ class BottomTextField extends StatelessWidget {
                   color: Colors.deepPurpleAccent,
                   onPressed: () {
                     if (hangulInput.text.isNotEmpty) {
+                      undo();
                       hangulInput.backspace();
                       logger.i(
                         "'${textController.text.substring(textController.text.length - 1)}' 제거",
