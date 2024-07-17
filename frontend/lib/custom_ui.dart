@@ -6,10 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 
-import 'utils/korean.dart';
+import 'utils/hangul/hangul.dart';
 import 'widgets/bottom_text_field.dart';
 import 'widgets/camera_preview_widget.dart';
-import 'widgets/center_button.dart';
 import 'widgets/center_content.dart';
 import 'keyboard_states.dart';
 
@@ -25,13 +24,13 @@ class CustomUI extends StatefulWidget {
 class CustomUIState extends State<CustomUI> {
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
+  final _hangulInput = HangulInput('');
   final TextEditingController _textController = TextEditingController();
   final logger = Logger();
   bool _isConsonantPage = false;
   bool _isVowelPage = false;
-  KeyboardState _state = S0State();
+  KeyboardState _state = S0State('');
   int _currentPageIndex = 0;
-  var korean = Korean();
   String _displayText = '';
 
   final List<String> stateLabel = ['띄어\n쓰기', '입력\n완료', '자음', '모음'];
@@ -78,7 +77,13 @@ class CustomUIState extends State<CustomUI> {
 
   void _updateDisplayText() {
     setState(() {
-      _displayText = korean.moasseugi(_textController.text);
+      _displayText = _textController.text;
+    });
+  }
+
+  void undo(){
+    setState(() {
+      _state.undo(this);
     });
   }
 
@@ -103,7 +108,8 @@ class CustomUIState extends State<CustomUI> {
   }
 
   void inputText(String text){
-    _textController.text += text;
+    _hangulInput.pushCharacter(text);
+    _textController.text = _hangulInput.text;
   }
 
   void incrementIdx(){
@@ -144,43 +150,8 @@ class CustomUIState extends State<CustomUI> {
       }});
   }
 
-  void _goToMainPage() {
-    setState(() {
-      _isConsonantPage = false;
-      _isVowelPage = false;
-      _currentLabels = stateLabel;
-    });
-  }
-
-  void _togglePage(String label) {
-    if (label == '자음') {
-      setState(() {
-        _isConsonantPage = true;
-        _isVowelPage = false;
-        _currentLabels = consonantPages[0];
-        _currentPageIndex = 0;
-      });
-    } else if (label == '모음') {
-      setState(() {
-        _isConsonantPage = false;
-        _isVowelPage = true;
-        _currentLabels = vowelPages[0];
-        _currentPageIndex = 0;
-      });
-    } else if (label == '띄어\n쓰기') {
-      setState(() {
-        _textController.text += ' ';
-      });
-    } else if (label == '입력\n완료') {
-      _saveToFile(_textController.text);
-      setState(() {
-        _textController.clear();
-      });
-    }
-  }
-
   void _saveToFile(String text) async {
-    text = korean.moasseugi(text);
+    text = _textController.text;
 
     var now = DateTime.now();
     var year = now.year;
@@ -240,9 +211,10 @@ class CustomUIState extends State<CustomUI> {
             ),
             BottomTextField(
               textController: _textController,
+              hangulInput: _hangulInput,
               displayText: _displayText,
-              korean: korean,
-              onSubmit: () => logger.i(korean.moasseugi(_textController.text)),
+              onSubmit: () => logger.i(_textController.text),
+              undo: undo,
               logger: logger,
             ),
           ],

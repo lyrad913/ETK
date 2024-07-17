@@ -125,6 +125,7 @@ class Korean {
           if (secondJungsung[
                   firstJungsung.indexOf(inputList[inputList.length - 2])]
               .contains(inputList.last)) {
+                int testValue = firstJungsung.indexOf(inputList.removeLast());
             jung = secondJungsung[firstJungsung.indexOf(inputList.removeLast())]
                     .indexOf(inputList.removeLast()) +
                 jungsung.indexOf(inputList.removeLast()) +
